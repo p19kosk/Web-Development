@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Σκοπός & Εγγραφή - Πλατφόρμα Λιστών</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', Arial, Helvetica, sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .topnav {
+            overflow: hidden;
+            background-color: #2d3748;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60px;
+            padding: 0 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .topnav .brand {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8db1da;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .topnav a:not(.login-signup-link) {
+            color: #f2f2f2;
+            text-align: center;
+            padding: 18px 22px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 400;
+            transition: background-color 0.3s, color 0.3s;
+            display: inline-block;
+        }
+
+        .topnav a:not(.login-signup-link):hover {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .topnav a.active {
+            background-color: #4a5568;
+            color: white;
+            font-weight: 600;
+        }
+
+        .login-signup-link {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 18px;
+            border-radius: 8px;
+            background-color: #4a5568;
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s, transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .login-signup-link:hover {
+            background-color: #615bb1;
+            color: white;
+            transform: translateY(-2px);
+        }
+         .topnav-right-items .login-signup-link.active {
+             background-color: #615bb1;
+             color: white;
+        }
+
+
+        #theme-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #8db1da;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+            transition: color 0.3s, transform 0.2s;
+        }
+
+        #theme-toggle:hover {
+            color: #f2f2f2;
+            transform: scale(1.1);
+        }
+
+        .main-content-area {
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .container h1 {
+             color: #e2e8f0;
+             font-size: 2.2em;
+             margin-bottom: 30px;
+             text-align: center;
+             font-weight: 600;
+        }
+
+        button.accordion {
+            width: 100%;
+            background-color: #2d3748;
+            border: none;
+            outline: none;
+            text-align: left;
+            padding: 18px 25px;
+            font-size: 1.1em;
+            font-family: 'Poppins', sans-serif;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 8px;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        button.accordion:after {
+            font-family: FontAwesome;
+            content: "\f107";
+            font-size: 1.1em;
+            float: right;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        button.accordion.is-open:after {
+             transform: rotate(180deg);
+        }
+
+        button.accordion:hover,
+        button.accordion.is-open {
+            background-color: #615bb1;
+            color: white;
+        }
+
+        .accordion-content {
+            background-color: #222a38;
+            padding: 0 25px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+            color: #cbd5e0;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .accordion-content.open {
+             padding: 20px 25px;
+        }
+
+        .accordion-content p, .accordion-content ul {
+            margin-top: 0;
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        .accordion-content ul {
+            padding-left: 25px;
+        }
+        .accordion-content li {
+            margin-bottom: 8px;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            width: 100%;
+            background-color: #4a5568;
+            margin-top: 40px;
+            margin-bottom: 0;
+        }
+
+        .footer {
+            font-size: 0.9em;
+            width: 100%;
+            color: #a0aec0;
+            text-align: center;
+            text-decoration: none;
+            padding: 25px 0;
+            margin-top: auto;
+        }
+
+        body.light-theme {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        body.light-theme .topnav {
+            background-color: #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        body.light-theme .topnav .brand {
+            color: #0056b3;
+        }
+
+        body.light-theme .topnav a:not(.login-signup-link) {
+            color: #343a40;
+        }
+
+        body.light-theme .topnav a:not(.login-signup-link):hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        body.light-theme .topnav a.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+         body.light-theme .login-signup-link {
+            background-color: #007bff;
+            color: white;
+        }
+
+        body.light-theme .login-signup-link:hover {
+            background-color: #0056b3;
+        }
+        body.light-theme .topnav-right-items .login-signup-link.active {
+             background-color: #0056b3;
+             color: white;
+        }
+
+        body.light-theme #theme-toggle {
+            color: #0056b3;
+        }
+        body.light-theme #theme-toggle:hover {
+            color: #007bff;
+        }
+
+        body.light-theme .container h1 {
+            color: #343a40;
+        }
+
+        body.light-theme button.accordion {
+            background-color: #f1f3f5;
+            color: #212529;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        body.light-theme button.accordion:after {
+            color: #495057;
+        }
+
+        body.light-theme button.accordion:hover,
+        body.light-theme button.accordion.is-open {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+         body.light-theme button.accordion.is-open:after {
+            color: #ffffff;
+        }
+
+        body.light-theme .accordion-content {
+            background-color: #ffffff;
+            color: #343a40;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        body.light-theme hr {
+            background-color: #dee2e6;
+        }
+
+        body.light-theme .footer {
+            color: #6c757d;
+        }
+         @media (max-width: 768px) {
+            .topnav .brand { font-size: 20px; }
+            .topnav a:not(.login-signup-link) { padding: 15px 10px; font-size: 15px; }
+            .login-signup-link { padding: 8px 12px; font-size: 14px; }
+            #theme-toggle { font-size: 20px; }
+            .container h1 { font-size: 1.8em; }
+            button.accordion { padding: 15px 20px; font-size: 1em; }
+        }
+
+        @media (max-width: 500px) {
+             .topnav { justify-content: space-between; }
+            .topnav .brand { position: static; transform: none; padding: 10px 0; }
+            .login-signup-link { position: static; transform: none; margin-left: 10px; }
+            #theme-toggle { position: static; transform: none; }
+            .topnav-right-items { display: flex; align-items: center; }
+        }
+  </style>
+</head>
+<body>
+    <div class="topnav">
+        <span class="brand">Πλατφόρμα Λιστών</span>
+        <div class="nav-links-group">
+            <a href="index.html">Αρχική</a>
+            <a class="active" href="goal_sign_up.html">Σκοπός & Εγγραφή</a>
+            <a href="help.html">Βοήθεια</a>
+        </div>
+        <div class="topnav-right-items">
+            <a href="sign_up_log_in.php" class="login-signup-link">Σύνδεση/Εγγραφή</a>
+            <button id="theme-toggle" title="Εναλλαγή θέματος">
+                <i class="fa fa-sun-o" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content-area">
+        <div class="container">
+          <h1>Σκοπός & Εγγραφή</h1>
+
+          <button class="accordion">🎯 Σκοπός του ιστότοπου</button>
+          <div class="accordion-content">
+            <p>Καλώς ήρθατε στην πλατφόρμα μας! Σκοπός αυτού του ιστοτόπου είναι να σας επιτρέψει να δημιουργείτε, να οργανώνετε και να μοιράζεστε λίστες με το αγαπημένο σας περιεχόμενο ροής από το YouTube.
+            </p>
+            <p>Μπορείτε να φτιάξετε τις δικές σας προσωπικές λίστες ή να τις κάνετε δημόσιες για να τις δουν οι φίλοι σας. Ακολουθήστε άλλους χρήστες για να δείτε τις δημόσιες λίστες τους και αναπαράγετε τα βίντεο απευθείας από την πλατφόρμα.</p>
+          </div>
+
+          <button class="accordion">📝 Πώς να Εγγραφείτε</button>
+          <div class="accordion-content">
+            <p>Η εγγραφή είναι απλή και γρήγορη! Απλά πατήστε στον σύνδεσμο <strong>"Σύνδεση/Εγγραφή"</strong> στο μενού, επιλέξτε "Εγγραφή" και συμπληρώστε τη φόρμα με τα στοιχεία σας:
+              <ul>
+                <li><strong>Όνομα</strong></li>
+                <li><strong>Επώνυμο</strong></li>
+                <li><strong>Username (μοναδικό)</strong></li>
+                <li><strong>Κωδικός Πρόσβασης</strong></li>
+                <li><strong>Email (μοναδικό)</strong></li>
+              </ul>
+            </p>
+            <p>Όλα τα πεδία είναι <strong>υποχρεωτικά</strong>.</p>
+          </div>
+
+          <button class="accordion">💡 Γιατί να Εγγραφείτε;</button>
+          <div class="accordion-content">
+            <p>Με την εγγραφή σας αποκτάτε πρόσβαση σε όλες τις δυνατότητες της πλατφόρμας:
+              <ul>
+                <li><strong>Δημιουργία απεριόριστων λιστών περιεχομένου.</strong></li>
+                <li><strong>Επιλογή μεταξύ ιδιωτικών και δημόσιων λιστών.</strong></li>
+                <li><strong>Δυνατότητα να ακολουθείτε άλλους χρήστες και να βλέπετε τις δημόσιες λίστες τους.</strong></li>
+                <li><strong>Αναπαραγωγή βίντεο απευθείας από το προφίλ σας.</strong></li>
+                <li><strong>Εύκολη αναζήτηση περιεχομένου στο YouTube και προσθήκη στις λίστες σας.</strong></li>
+                <li><strong>Διαχείριση του προφίλ σας.</strong></li>
+              </ul>
+          </div>
+        </div>
+    </div>
+    <hr>
+    <footer class="footer">
+        Τεχνολογίες Διαδικτύου - Εργασία 2025 - Ιόνιο Πανεπιστήμιο, Τμήμα Πληροφορικής
+    </footer>
+
+    <script>
+        const accordionBtns = document.querySelectorAll(".accordion");
+
+        accordionBtns.forEach((accordion) => {
+            accordion.onclick = function () {
+                this.classList.toggle("is-open");
+                let content = this.nextElementSibling;
+                content.classList.toggle("open");
+
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            };
+        });
+
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const themeIcon = themeToggleBtn.querySelector('i');
+
+        function setTheme(theme) {
+            body.classList.remove('light-theme', 'dark-theme');
+            themeIcon.classList.remove('fa-sun-o', 'fa-moon-o');
+
+            if (theme === 'light') {
+                body.classList.add('light-theme');
+                themeIcon.classList.add('fa-moon-o');
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.title = "Εναλλαγή σε σκούρο θέμα";
+            } else {
+                body.classList.add('dark-theme');
+                themeIcon.classList.add('fa-sun-o');
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.title = "Εναλλαγή σε ανοιχτό θέμα";
+            }
+        }
+
+        const currentTheme = localStorage.getItem('theme');
+        setTheme(currentTheme || 'dark');
+
+        themeToggleBtn.addEventListener('click', () => {
+            const newTheme = body.classList.contains('light-theme') ? 'dark' : 'light';
+            setTheme(newTheme);
+        });
+    </script>
+
+</body>
+</html>
