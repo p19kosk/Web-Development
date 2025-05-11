@@ -2,41 +2,33 @@
 
 session_start();
 
-// Database connection details
-$host = 'db'; // Or your database host
-$db   = 'di_internet_technologies_project'; // Your database name
-$user = 'webuser'; // Your database user
-$pass = 'webpass'; // Your database password
+$host = 'db'; 
+$db   = 'di_internet_technologies_project'; 
+$user = 'webuser'; 
+$pass = 'webpass'; 
 
 
-// Create connection
 $conn = new mysqli($host, $user, $pass, $db);
 
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Set charset to utf8mb4 for proper Greek character handling
 $conn->set_charset("utf8mb4");
 
-// Initialize variables for messages and form stickiness
 $registration_error = '';
 $registration_success = '';
-$just_registered_username = null; // Used to prefill login form after successful registration
+$just_registered_username = null; 
 
-// --- Registration Logic ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register_submit'])) {
-    // Sanitize and retrieve form data
     $first_name = trim($_POST["first_name"]);
     $last_name = trim($_POST["last_name"]);
     $username_reg = trim($_POST["username_reg"]);
     $email_reg = trim($_POST["email_reg"]);
-    $password_reg = $_POST["password_reg"]; // Password (will be hashed)
+    $password_reg = $_POST["password_reg"]; 
     $confirm_password = $_POST["confirm_password"];
 
-    // Basic validation
     if (empty($first_name) || empty($last_name) || empty($username_reg) || empty($email_reg) || empty($password_reg)) {
         $registration_error = "Όλα τα πεδία είναι υποχρεωτικά.";
     } elseif (!filter_var($email_reg, FILTER_VALIDATE_EMAIL)) {
@@ -46,7 +38,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register_submit'])) {
     } elseif ($password_reg !== $confirm_password) {
         $registration_error = "Οι κωδικοί πρόσβασης δεν ταιριάζουν.";
     } else {
-        // Check if username or email already exists
         $stmt_check = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
         $stmt_check->bind_param("ss", $username_reg, $email_reg);
         $stmt_check->execute();
@@ -55,17 +46,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register_submit'])) {
         if ($stmt_check->num_rows > 0) {
             $registration_error = "Αυτό το όνομα χρήστη ή το email χρησιμοποιείται ήδη.";
         } else {
-            // Hash the password
             $hashed_password_reg = password_hash($password_reg, PASSWORD_DEFAULT);
 
-            // Prepare and execute insert statement
             $stmt_insert = $conn->prepare("INSERT INTO users (first_name, last_name, username, password, email) VALUES (?, ?, ?, ?, ?)");
             $stmt_insert->bind_param("sssss", $first_name, $last_name, $username_reg, $hashed_password_reg, $email_reg);
 
             if ($stmt_insert->execute()) {
                 $registration_success = "Η εγγραφή ολοκληρώθηκε με επιτυχία! Μπορείτε τώρα να συνδεθείτε.";
-                $just_registered_username = $username_reg; // For prefilling login form
-                // Clear POST data to prevent re-submission and clear form fields on success
+                $just_registered_username = $username_reg; 
                 $_POST = array();
             } else {
                 $registration_error = "Σφάλμα κατά την εγγραφή: " . $stmt_insert->error;
@@ -76,7 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register_submit'])) {
     }
 }
 
-// --- Login Logic ---
 $login_error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
@@ -99,9 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
                 $stmt_login->fetch();
 
                 if (password_verify($password_login, $hashed_password_db)) {
-                    // Login successful
                     $_SESSION['user_id'] = $user_id;
-                    // Redirect to profile page (replace with your actual profile page)
                     header("Location: profile.php");
                     exit();
                 } else {
@@ -115,8 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
     }
 }
 
-// Close connection (optional here, as PHP closes it at script end)
-// $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="el">
@@ -128,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset and Global Styles */
         * {
             margin: 0;
             padding: 0;
@@ -137,8 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
 
         body {
             font-family: 'Poppins', Arial, Helvetica, sans-serif;
-            background-color: #1a202c; /* Dark theme background */
-            color: #e2e8f0; /* Dark theme text color */
+            background-color: #1a202c; 
+            color: #e2e8f0; 
             transition: background-color 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
@@ -147,7 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
             line-height: 1.6;
         }
 
-        /* Top Navigation Bar Styles */
         .topnav {
             overflow: hidden;
             background-color: #2d3748;
@@ -254,7 +235,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
             color: #fff;
         }
 
-        /* Main Content Area */
         .center-container {
             display: flex;
             justify-content: center;
@@ -288,13 +268,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
             text-align: center;
             color: #e2e8f0; 
             margin-bottom: 5px; 
-            opacity: 0; /* Αρχικά αόρατος */
+            opacity: 0; 
             transition: margin-left 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-                        opacity 0.4s ease-in-out; /* Αφαιρέθηκε η καθυστέρηση από την opacity */
+                        opacity 0.4s ease-in-out; 
         }
         
         .wrapper .title.title-visible {
-            opacity: 1; /* Κλάση για να γίνει ορατός ο τίτλος */
+            opacity: 1; 
         }
 
         .wrapper .slide-controls {
@@ -420,7 +400,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
             flex-shrink: 0;
         }
 
-        /* --- Light Theme Styles --- */
         body.light-theme {
             background-color: #f8f9fa;
             color: #212529;
@@ -496,7 +475,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
         body.light-theme hr { background-color: #dee2e6; }
         body.light-theme .footer { color: #6c757d; }
 
-        /* Responsive Styles - Consistent with other pages */
         @media (max-width: 768px) {
             .topnav .brand { font-size: 20px; }
             .topnav a:not(.login-signup-link) { padding: 15px 10px; font-size: 15px; }
@@ -711,7 +689,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
     </footer>
 
     <script>
-        // --- Form Slider Logic (Login/Signup Tabs) ---
         const loginForm = document.querySelector("form.login");
         const switchToSignupLink = document.getElementById("switchToSignupLink");
         const switchToLoginLink = document.getElementById("switchToLoginLink");
@@ -721,59 +698,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
         const loginRadio = document.getElementById('login');
         const signupRadio = document.getElementById('signup');
 
-        // Function to update display based on which radio is checked (for transitions)
         function updateDisplayForSwitch() {
-            // Determine which title should start fading out
-            if (loginRadio.checked) { // Login is now active, Signup was potentially active
+            if (loginRadio.checked) { 
                 if (signupTitle) signupTitle.classList.remove('title-visible');
-            } else { // Signup is now active, Login was potentially active
+            } else { 
                 if (loginTitle) loginTitle.classList.remove('title-visible');
             }
 
-            // After a brief moment (to let the fade-out start), perform slide and fade-in
             setTimeout(() => {
                 if (signupRadio.checked) {
                     loginForm.style.marginLeft = "-50%";
-                    if (loginTitle) loginTitle.style.marginLeft = "-50%"; // Slide out old title
+                    if (loginTitle) loginTitle.style.marginLeft = "-50%"; 
                     if (signupTitle) {
-                        signupTitle.style.marginLeft = "0%"; // Ensure correct position
-                        signupTitle.classList.add('title-visible'); // Fade in new title
+                        signupTitle.style.marginLeft = "0%"; 
+                        signupTitle.classList.add('title-visible'); 
                     }
-                } else { // loginRadio.checked
+                } else { 
                     loginForm.style.marginLeft = "0%";
-                    // Ensure signup title is reset if it was slid (though it's usually hidden)
                     if (signupTitle) signupTitle.style.marginLeft = "0%"; 
                     if (loginTitle) {
-                        loginTitle.style.marginLeft = "0%"; // Ensure correct position
-                        loginTitle.classList.add('title-visible'); // Fade in new title
+                        loginTitle.style.marginLeft = "0%"; 
+                        loginTitle.classList.add('title-visible'); 
                     }
                 }
-            }, 50); // Small delay for visual sequencing of fade-out then slide/fade-in.
+            }, 50); 
         }
 
-        // Initial setup on page load for immediate visibility
         function setInitialFormDisplay() {
-            if (signupRadio.checked) { // If PHP decided signup is active
+            if (signupRadio.checked) { 
                 loginForm.style.marginLeft = "-50%";
-                if (loginTitle) loginTitle.style.marginLeft = "-50%"; // Position it as slid out
+                if (loginTitle) loginTitle.style.marginLeft = "-50%"; 
                 if (signupTitle) {
                     signupTitle.style.marginLeft = "0%"; 
-                    signupTitle.classList.add('title-visible'); // Show immediately
+                    signupTitle.classList.add('title-visible'); 
                 }
-            } else { // Login is active by default or by PHP
+            } else { 
                 loginForm.style.marginLeft = "0%"; 
                 if (loginTitle) {
                     loginTitle.style.marginLeft = "0%"; 
-                    loginTitle.classList.add('title-visible'); // Show immediately
+                    loginTitle.classList.add('title-visible'); 
                 }
-                // Ensure signup title is correctly positioned even if hidden initially
                 if (signupTitle) signupTitle.style.marginLeft = "0%";
             }
         }
 
-        setInitialFormDisplay(); // Call for page load
+        setInitialFormDisplay(); 
 
-        // Listen to changes on radio buttons for subsequent switches
         loginRadio.addEventListener('change', function() {
             if (this.checked) {
                 updateDisplayForSwitch();
@@ -785,14 +755,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
             }
         });
 
-        // Links will trigger radio change, which then calls updateDisplayForSwitch
         if (switchToSignupLink) {
             switchToSignupLink.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (!signupRadio.checked) {
                     signupRadio.checked = true;
-                    // Manually dispatch change event for browsers that might not do it automatically
-                    // on programmatic 'checked = true'
+                    
                     signupRadio.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             });
@@ -809,7 +777,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
         }
 
 
-        // --- Theme Toggle Logic ---
         const themeToggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
         const themeIcon = themeToggleBtn.querySelector('i');
@@ -824,7 +791,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
                 localStorage.setItem('theme', 'light');
                 themeToggleBtn.title = "Εναλλαγή σε σκούρο θέμα";
             } else {
-                body.classList.add('dark-theme'); // Default to dark if anything else
+                body.classList.add('dark-theme'); 
                 themeIcon.classList.add('fa-sun-o');
                 localStorage.setItem('theme', 'dark');
                 themeToggleBtn.title = "Εναλλαγή σε ανοιχτό θέμα";
@@ -832,14 +799,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_submit'])) {
         }
 
         const currentTheme = localStorage.getItem('theme');
-        setTheme(currentTheme || 'dark'); // Default to dark if no theme saved
+        setTheme(currentTheme || 'dark'); 
 
         themeToggleBtn.addEventListener('click', () => {
             const newTheme = body.classList.contains('light-theme') ? 'dark' : 'light';
             setTheme(newTheme);
         });
 
-        // --- Client-side Signup Form Validation ---
         const signupFormElement = document.getElementById('signupForm');
         const emailInput = document.getElementById('signupEmail');
         const passwordInput = document.getElementById('signupPassword');
